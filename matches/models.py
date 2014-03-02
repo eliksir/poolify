@@ -118,34 +118,35 @@ class Shot(models.Model):
     """
     Defines a shot within a race.
     """
-    POCKET_FOOT_LEFT = 'F-L'
-    POCKET_FOOT_RIGHT = 'F-R'
-    POCKET_SIDE_LEFT = 'S-L'
-    POCKET_SIDE_RIGHT = 'S-R'
-    POCKET_HEAD_LEFT = 'H-L'
-    POCKET_HEAD_RIGHT = 'H-R'
+    POCKET_FOOT_LEFT = '\u2196'
+    POCKET_FOOT_RIGHT = '\u2197'
+    POCKET_SIDE_LEFT = '\u2190'
+    POCKET_SIDE_RIGHT = '\u2192'
+    POCKET_HEAD_LEFT = '\u2199'
+    POCKET_HEAD_RIGHT = '\u2198'
     POCKETS = (
-        (POCKET_FOOT_LEFT, _('Foot pocket, left')),
-        (POCKET_FOOT_RIGHT, _('Foot pocket, right')),
-        (POCKET_SIDE_LEFT, _('Side pocket, left')),
-        (POCKET_SIDE_RIGHT, _('Side pocket, right')),
-        (POCKET_HEAD_LEFT, _('Head pocket, left')),
-        (POCKET_HEAD_RIGHT, _('Head pocket, right')),
+        (POCKET_FOOT_LEFT, '\u2196'),
+        (POCKET_FOOT_RIGHT, '\u2197'),
+        (POCKET_SIDE_LEFT, '\u2190'),
+        (POCKET_SIDE_RIGHT, '\u2192'),
+        (POCKET_HEAD_LEFT, '\u2199'),
+        (POCKET_HEAD_RIGHT, '\u2198'),
     )
 
-    race = models.ForeignKey(Race, verbose_name=_('shot'),
+    race = models.ForeignKey(Race, verbose_name=_('race'),
             related_name='shots', related_query_name='shot')
     player = models.ForeignKey(Player, verbose_name=_('player'),
             related_name='shots', related_query_name='shot')
     number = models.PositiveSmallIntegerField(_('shot number'))
     called_ball = models.PositiveSmallIntegerField(_('called ball'), blank=True,
-            null=True, choices=zip(range(1, 11), range(1, 11)))
+            null=True, choices=zip(range(1, 16), range(1, 16)))
     called_pocket = models.CharField(_('called pocket'), max_length=3, blank=True,
             choices=POCKETS)
     pocketed_ball = models.PositiveSmallIntegerField(_('pocketed ball'), blank=True,
-            null=True, choices=zip(range(1, 11), range(1, 11)))
-    in_pocket = models.CharField(_('in pocket'), max_length=3, blank=True,
+            null=True, choices=zip(range(1, 16), range(1, 16)))
+    pocketed_in = models.CharField(_('in pocket'), max_length=3, blank=True,
             choices=POCKETS)
+    is_legal = models.BooleanField(_('is legally pocketed'), default=None)
     is_foul = models.BooleanField(_('is foul'), default=None)
 
     def __str__(self):
