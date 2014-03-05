@@ -39,6 +39,11 @@ class ParticipantInline(admin.TabularInline):
         return 2 if not obj else 0
 
 
+class OutcomeInline(admin.TabularInline):
+    model = models.Outcome
+    extra = 2
+
+
 @admin.register(models.Match)
 class MatchAdmin(admin.ModelAdmin):
     inlines = [ParticipantInline]
@@ -51,4 +56,9 @@ class RaceAdmin(admin.ModelAdmin):
 
 @admin.register(models.Shot)
 class ShotAdmin(admin.ModelAdmin):
+    inlines = [OutcomeInline]
+
+
+@admin.register(models.Outcome)
+class OutcomeAdmin(admin.ModelAdmin):
     pass

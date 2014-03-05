@@ -38,6 +38,7 @@ class Participant(models.Model):
     # trigger random team assignment.
     team = models.PositiveSmallIntegerField(_('team'), choices=TEAM_CHOICES,
             blank=True)
+
     suit = models.CharField(_('suit'), max_length=10, choices=SUIT_CHOICES,
             blank=True)
 
@@ -114,16 +115,17 @@ class Race(models.Model):
 
 
 @python_2_unicode_compatible
-class Shot(models.Model):
+class Outcome(models.Model):
     """
-    Defines a shot within a race.
+    Defines a potential or actual shot outcome: A ball in a pocket.
     """
-    POCKET_FOOT_LEFT = '\u2196'
-    POCKET_FOOT_RIGHT = '\u2197'
-    POCKET_SIDE_LEFT = '\u2190'
-    POCKET_SIDE_RIGHT = '\u2192'
-    POCKET_HEAD_LEFT = '\u2199'
-    POCKET_HEAD_RIGHT = '\u2198'
+    POCKET_FOOT_LEFT = 'F-L'
+    POCKET_FOOT_RIGHT = 'F-R'
+    POCKET_SIDE_LEFT = 'S-L'
+    POCKET_SIDE_RIGHT = 'S-R'
+    POCKET_HEAD_LEFT = 'H-L'
+    POCKET_HEAD_RIGHT = 'H-R'
+
     POCKETS = (
         (POCKET_FOOT_LEFT, '\u2196'),
         (POCKET_FOOT_RIGHT, '\u2197'),
@@ -133,19 +135,32 @@ class Shot(models.Model):
         (POCKET_HEAD_RIGHT, '\u2198'),
     )
 
+    shot = models.ForeignKey('Shot', verbose_name=_('shot'),
+            related_name='outcomes', blank=True, null=True,
+            help_text=_("Only use this for actual outcomes, NOT called!"))
+    ball = models.PositiveSmallIntegerField(_('ball'), blank=True,
+            null=True, choices=zip(range(1, 16), range(1, 16)))
+    pocket = models.CharField(_('pocket'), max_length=3, blank=True,
+            choices=POCKETS)
+
+    def __str__(self):
+        return "{} in {}".format(self.ball, self.get_pocket_display())
+
+    class Meta:
+        pass
+
+@python_2_unicode_compatible
+class Shot(models.Model):
+    """
+    Defines a shot within a race.
+    """
     race = models.ForeignKey(Race, verbose_name=_('race'),
             related_name='shots', related_query_name='shot')
     player = models.ForeignKey(Player, verbose_name=_('player'),
             related_name='shots', related_query_name='shot')
+    call = models.OneToOneField(Outcome, verbose_name=_('called shot'),
+            related_name='called_shot')
     number = models.PositiveSmallIntegerField(_('shot number'))
-    called_ball = models.PositiveSmallIntegerField(_('called ball'), blank=True,
-            null=True, choices=zip(range(1, 16), range(1, 16)))
-    called_pocket = models.CharField(_('called pocket'), max_length=3, blank=True,
-            choices=POCKETS)
-    pocketed_ball = models.PositiveSmallIntegerField(_('pocketed ball'), blank=True,
-            null=True, choices=zip(range(1, 16), range(1, 16)))
-    pocketed_in = models.CharField(_('in pocket'), max_length=3, blank=True,
-            choices=POCKETS)
     is_legal = models.BooleanField(_('is legally pocketed'), default=None)
     is_foul = models.BooleanField(_('is foul'), default=None)
 
