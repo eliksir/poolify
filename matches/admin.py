@@ -41,7 +41,7 @@ class ParticipantInline(admin.TabularInline):
 
 class OutcomeInline(admin.TabularInline):
     model = models.Outcome
-    extra = 2
+    extra = 1
 
 
 @admin.register(models.Match)

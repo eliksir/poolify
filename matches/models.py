@@ -147,7 +147,9 @@ class Outcome(models.Model):
         return "{} in {}".format(self.ball, self.get_pocket_display())
 
     class Meta:
+        unique_together = ('shot', 'ball')
         pass
+
 
 @python_2_unicode_compatible
 class Shot(models.Model):
